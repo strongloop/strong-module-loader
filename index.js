@@ -3,3 +3,4 @@
  */
  
 module.exports = require('./lib/module-loader');
+module.exports.Module = require('./lib/module');

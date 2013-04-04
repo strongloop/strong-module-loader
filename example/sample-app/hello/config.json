@@ -1,5 +1,5 @@
 {
-  "my-module-type": "./hello.js",
+  "module": "./hello.js",
   "options": {
     "msg": "world"
   }
