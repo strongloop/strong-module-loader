@@ -106,6 +106,14 @@ Module classes may define dependency contracts that ensure dependencies are load
       'my-dependency': 'another-module-class'
     }
 
+#### Module Events
+
+Module classes may also emit and listen to events. By default a Module will emit the following events:
+
+**destroy**
+
+Emitted when a module instance is being destroyed during a `moduleLoader.reset()`. Modules should cleanup any connections and unbind all event listeners.
+
 ### Configuration
 
 Each module instance is defined by creating a `config.json` file in a directory with the module's name.

@@ -1,5 +1,5 @@
 {
-  "module": "../../my-module-type",
+  "module": "../my-module-type",
   "options": {
     "msg": "this module uses the default my-module-type"
   }

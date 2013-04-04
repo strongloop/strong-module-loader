@@ -3,7 +3,6 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
   , http = require('http')
   , path = require('path');
 
@@ -11,46 +10,30 @@ var app = express();
 
 var ModuleLoader = require('../../');
 
-var ml = ModuleLoader.create('modules', {ttl: 0});
-
-app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'ejs');
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  
-  app.use(function (req, res, next) {
-    console.log(ml.ttl());
-    
-    ml.load(function (err, config) {
-      if(err) {
-        res.send(err);
-      } else {
-        var module = ml.getByName(req.url.replace('/', ''));
-        if(module) {
-          module.handle(req, res, next);
-        } else {
-          next();
-        }
-      }
-    })
-  });
-  
-  
-  app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
-});
-
-app.configure('development', function(){
-  app.use(express.errorHandler());
-});
+var ml = ModuleLoader.create('.', {ttl: 0, ignore: ['node_modules']});
 
 var options = {};
 
-routes(app, options);
+app.set('port', process.env.PORT || 3000);
+
+app.use(function (req, res, next) {
+  ml.load(function (err, config) {
+    if(err) {
+      throw err;
+    } else {
+      // simple routing
+      var module = ml.getByName(req.url.replace('/', ''));
+      
+      if(module) {
+        module.handle(req, res, next);
+      } else {
+        next();
+      }
+    }
+  });
+});
+
+app.use(app.router);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("express-app listening on port " + app.get('port'));

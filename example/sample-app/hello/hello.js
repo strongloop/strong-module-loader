@@ -1,4 +1,4 @@
-var MyModuleType = require('../../my-module-type');
+var MyModuleType = require('../my-module-type');
 var util = require('util');
 
 module.exports = HelloModule;
