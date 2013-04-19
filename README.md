@@ -198,3 +198,26 @@ After your program runs `require('module-loader')` the `require()` function's be
 ## Config Loader
 
 `module-loader` inherits from [config-loader](https://github.com/strongloop/config-loader).
+
+
+## Bundled Modules / Aliasing
+
+Some modules need to be distributed together. For example, you have a set of related modules that all live under a single version number since they depend on features from each other. In this case you should bundle your sub modules using the package.json `bundledDependencies` array. The module loader will check for bundled dependencies as well as whatever is returned available to `require('my-module-name')`.
+
+Without modifying your bundled module you may reference bundled modules by relative location (just like require).
+
+    // config.json
+    {
+      "module": "myBundle/node_modules/foo"
+    }
+
+You may provide aliases to any module path when creating a `ModuleLoader`.
+
+    var moduleLoader = require('module-loader').create('my-app', {alias: {'foo': 'myBundle/node_modules/foo'}});
+
+Now the config can reference `foo` instead of the qualified path.
+
+    // config.json
+    {
+      "module": "foo"
+    }
