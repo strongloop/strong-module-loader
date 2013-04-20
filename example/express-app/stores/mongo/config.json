@@ -1,7 +1,7 @@
 {
   "module": "mongo-store",
   "options": {
-    "database": "module-loader-testing-db",
+    "database": "asteroid-module-loader-testing-db",
     "host": "127.0.0.1",
     "port": "27017"
   }

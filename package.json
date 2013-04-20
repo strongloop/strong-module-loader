@@ -1,13 +1,13 @@
 {
-  "name": "module-loader",
-  "description": "module-loader",
+  "name": "asteroid-module-loader",
+  "description": "asteroid-module-loader",
   "version": "0.0.1",
   "scripts": { 
     "test": "mocha"
   },
   "dependencies": {
     "debug": "latest",
-    "config-loader": "latest"
+    "asteroid-config-loader": "latest"
   },
   "devDependencies": {
     "mocha": "latest"

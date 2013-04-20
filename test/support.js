@@ -1,5 +1,5 @@
 /**
- * module-loader test setup and support.
+ * asteroid-module-loader test setup and support.
  */
  
 assert = require('assert');
