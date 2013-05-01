@@ -66,20 +66,13 @@ The above calls a method on all module instances that inherit from `Dog` and out
     roof my name is santa's little helper
     roof my name is rex
 
-## Creating Modules
+## Creating Module Classes
 
-The purpose of a module is to take meaningful input (configuration, options, dependencies, etc) and create a useful output: an object.
-
-There are two types of modules:
-
- 1. A module class: constructor
- 1. A module instance: object
- 
-A module class uses configuration to construct a module instance.
+The purpose of a module class is to take meaningful input (configuration, options, dependencies) and create a useful output: a module instance.
 
 ### Module Classes
 
-A module class is a `node_module` that exports a constructor that inherits from the `Module` class.
+A module class is a `node_module` that exports a constructor inheriting from the `Module` class.
 
     var inherits = require('util').inherits;
     var Module = require('asteroid-module-loader').Module;
@@ -96,14 +89,44 @@ A module class is a `node_module` that exports a constructor that inherits from 
       console.log('roof', 'my name is', this.options.name);
     }
 
-Module classes may define dependency contracts that ensure dependencies are loaded of the correct type.
+Module classes may define dependency contracts that tell the module loader to provide dependencies of a given module class during construction.
 
     function MyComplexModule() {
+      Module.apply(this, arguments);
       console.log('loaded dependencies', this.dependencies); // {'my-dependency': <module instance>}
     }
 
     MyComplexModule.dependencies = {
       'my-dependency': 'another-module-class'
+    }
+
+#### Module Class Options
+
+Module classes may also describe the options they accept. This will validate the configuration of module instance and guarantee the module class constructor has enough information to construct an instance.
+
+Here is an example options description for a database connection module class.
+
+    DatabaseConnection.options = {
+      'hostname': {type: 'string', required: true},
+      'port': {type: 'number', min: 10, max: 99999},
+      'username': {type: 'string'},
+      'password': {type: 'string'}
+    };
+
+**key** the option name given in `config.json`.
+
+**type** must be one of:
+
+ - string
+ - boolean
+ - number
+ - array
+
+**min/max** depend on the option type
+
+    {
+      min: 10, // minimum length or value
+      max: 100, // max length or value
     }
 
 #### Module Events
@@ -123,11 +146,11 @@ Each module instance is defined by creating a `config.json` file in a directory 
       other-files.txt
       index.js
       
-This directory can contain scripts and other files that use the module or the module depend on.
+This directory should contain files related to the module instance. For example it might contain a script that `require()`s the module instance. 
 
 #### config.module
 
-Defines the module class for the config's module instance.
+The node module name that exports the module class that constructs the config's module instance.
 
     {
       "module": "my-module-class"
@@ -202,16 +225,16 @@ After your program runs `require('asteroid-module-loader')` the `require()` func
 
 ## Bundled Modules / Aliasing
 
-Some modules need to be distributed together. For example, you have a set of related modules that all live under a single version number since they depend on features from each other. In this case you should bundle your sub modules using the package.json `bundledDependencies` array. The module loader will check for bundled dependencies as well as whatever is returned available to `require('my-module-name')`.
+Some modules need to be distributed together. For example, you have a set of related modules that all live under a single version number since they depend on features from each other. In this case you should bundle your sub modules using the package.json `bundledDependencies` array.
 
-Without modifying your bundled module you may reference bundled modules by relative location (just like require).
+Reference bundled modules by relative location (just like require).
 
     // config.json
     {
       "module": "myBundle/node_modules/foo"
     }
 
-You may provide aliases to any module path when creating a `ModuleLoader`.
+You may also provide aliases to any module path when creating a `ModuleLoader`.
 
     var moduleLoader = require('asteroid-module-loader').create('my-app', {alias: {'foo': 'myBundle/node_modules/foo'}});
 

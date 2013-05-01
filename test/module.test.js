@@ -33,10 +33,10 @@ describe('Module', function(){
     
     var called = false;
     
-    BarModule.prototype._resolveDependencies = function (deps) {
-      assert(deps.foo == 'complex-foo');
-      assert(deps.bar == 'bar');
-      assert(deps.baz == 'baz');
+    BarModule.prototype._resolveDependencies = function (depsConfig, desc) {
+      assert(desc.foo == 'complex-foo');
+      assert(desc.bar == 'bar');
+      assert(desc.baz == 'baz');
       called = true;
     }
     
