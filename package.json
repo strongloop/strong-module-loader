@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "debug": "latest",
-    "asteroid-config-loader": "latest"
+    "asteroid-config-loader": "git+ssh://git@github.com:strongloop/asteroid-config-loader.git"
   },
   "devDependencies": {
     "mocha": "latest"
