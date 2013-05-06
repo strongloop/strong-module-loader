@@ -1,24 +1,30 @@
 var ModuleLoader = require('../');
+var path = require('path');
+var SAMPLE_APP = path.join(__dirname, 'support', 'sample-app');
 
-// describe('ModuleLoader', function(){
-//   var moduleLoader;
-//   
-//   beforeEach(function(){
-//     moduleLoader = new ModuleLoader;
-//   });
-//   
-//   describe('.myMethod', function(){
-//     // example sync test
-//     it('should <description of behavior>', function() {
-//       moduleLoader.myMethod();
-//     });
-//     
-//     // example async test
-//     it('should <description of behavior>', function(done) {
-//       setTimeout(function () {
-//         moduleLoader.myMethod();
-//         done();
-//       }, 0);
-//     });
-//   });
-// });
+
+describe('ModuleLoader', function(){
+  var objects;
+  
+  beforeEach(function(){
+    objects = ModuleLoader.create(SAMPLE_APP);
+  });
+  
+  describe('.build(fn)', function(){
+    it('should build a set of objects', function(done) {
+      objects.build(done);
+    });
+  });
+  
+  describe('.instanceOf(type)', function(){
+    it('should return an array of objects', function(done) {
+      objects.build(function (err) {
+        if(err) throw err;
+        
+        var dogs = objects.instanceOf('dog');
+        
+        assert(Array.isArray(dogs));
+      });
+    });
+  });
+});

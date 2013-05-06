@@ -1,78 +1,140 @@
-# asteroid-module-loader
+# object-builder
 v0.0.1
 
 ## Purpose
 
-The `asteroid-module-loader` allows your program to register classes (or types) that are instantiated via configuration files. Configuration files point to an implementation `module` constructor. The `module`'s job is to construct a useful instance with the given configuration options. This allows programs to be free from bootstrapping code and manageable via config.
+Instantiate `objects` backed by vanilla JavaScript classes by writing config files. Your class constructors may declare `options` and `dependencies` that will validate provided configuration and inject instances of your dependencies.
+
+ - This doesn't replace `require()`. Use this alongside `require()`.
+ - This is not a plugin framework.
+ - This is only for creating objects from config files.
 
 ## Install
 
-    slnode install asteroid-module-loader
+    npm install slnode-configurable
     
 ## Example
 
-Given a simple `Dog` module:
+Write a couple vanilla JavaScript classes.
 
-    function Dog(options) {
-      this.options = options;
+**logger.js**
+ 
+    var inherits = require('util').inherits
+      , Module = require('slnode-configurable').Module;
+
+    function Log(options) {
+      // call super constructor
+      Module.apply(this, arguments);
     }
-  
-    Dog.prototype.speak = function() {
-      console.log('roof', 'my name is', this.options.name);
+
+    // inherit from Module
+    inherits(Log, Module);
+
+    // some options
+    Log.options = {
+      prefix: 'string'
+    };
+
+    // an instance method
+    Log.prototype.write = function (msg) {
+      console.log(this.options.prefix, msg);
     }
     
+    // export it
+    module.exports = Log;
+    
+**dog.js**
+        
+    var inherits = require('util').inherits
+      , Module = require('slnode-configurable').Module;
+        
+    function Dog(options) {
+      Module.apply(this, arguments);
+      
+      // the logger is built for us as a dependency
+      this.logger = this.dependencies.logger;
+    }
+    
+    Dog.options = {
+      name: 'string'
+    };
+    
+    Dog.dependencies = {
+      logger: 'logger'
+    };
+  
+    inherits(Dog, Module);
+  
+    Dog.prototype.speak = function() {
+      this.logger.write('my name is' + this.options.name);
+    }
+    
+    // export it
     module.exports = Dog;
 
-And a set of `config.json` files:
-
-    /my-app
-      /fido
-        config.json
-      /santas-little-helper
-        config.json
-      /rex
-        config.json
-      /node_modules
-        /dog
-          index.js
-      package.json
-
-Where a `config.json` looks like this:
+**config.json**
 
     {
-      "module": "dog", // the "dog" module
-      "options": {
-        "name": "fido"
+      // regular instance - `name` option is provided by default
+      "fido": {
+        "require": "./dog",
+        // uses the global options
+        "dependencies": {"logger": "logger"}
+      },
+      // regular instance
+      "santas-little-helper": {
+        "require": "./dog",
+        // instance options
+        "options": {"name": "slh"},
+        "dependencies" {"logger": "logger"}
+      },
+      // regular instance
+      "rex": {
+        "require": "./dog",
+        "dependencies": {"logger": "rex-logger"}
+      },
+      // global dep
+      "logger": {
+        "require": "./logger",
+        "options": {"prefix": "roof!"}
+      }
+      // simple dep
+      "rex-logger": {
+        "require": "./logger",
+        "options": {"prefix": "ROOF!"}
       }
     }
 
-We can load up all the dogs like so (app.js):
+Load up the config (app.js):
 
-    var moduleLoader = require('asteroid-module-loader').create('my-app');
+    var objects = require('object-builder').create('my-app');
 
-    moduleLoader.load(function (err, modules) {
+    objects.build(function (err, modules) {
       if(err) throw err;
   
-      moduleLoader
-        .instanceOf('dog') // a module in node_modules or declared as a dependency in package.json
-        .forEach(function (m) {
-          m.speak();
+      objects
+        .instanceOf('dog') // module name / require() / Class name
+        .forEach(function (dog) {
+          dog.speak();
         });
     });
     
-The above calls a method on all module instances that inherit from `Dog` and outputs:
 
-    roof my name is fido
-    roof my name is santa's little helper
-    roof my name is rex
+**Note:** if your config doesn't provide the described options (Dog.options) or dependencies (Dog.dependencies) `build()` will callback with an `err`.
+    
+The above calls `speak()` on all module instances that inherit from `Dog` and outputs:
 
-## Creating Module Classes
+    ~ my name is fido
+    ... my name is slh
+    ROOF! my name is rex
 
-The purpose of a module class is to take meaningful input (configuration, options, dependencies) and create a useful output: a module instance.
+## Creating Classes
 
-### Module Classes
+Your class should take meaningful input (options, dependencies) and create a useful output: an object with methods and properties.
 
-A module class is a `node_module` that exports a constructor inheriting from the `Module` class.
+### Classes
+
+The `object-builder` does not have strong opinions on Classes. As far as it is concerned Classes are just vanilla JavaScript classes exported from a node module. Although if you want option validation and dependency injection your class must inherit from `ObjectBuilder.BaseObject`.
 
     var inherits = require('util').inherits;
     var Module = require('asteroid-module-loader').Module;
@@ -89,7 +151,7 @@ A module class is a `node_module` that exports a constructor inheriting from the
       console.log('roof', 'my name is', this.options.name);
     }
 
-Module classes may define dependency contracts that tell the module loader to provide dependencies of a given module class during construction.
+Classes that inherit from `Module` may define dependency contracts that tell the loader to provide dependencies of a given class during construction.
 
     function MyComplexModule() {
       Module.apply(this, arguments);
@@ -97,20 +159,20 @@ Module classes may define dependency contracts that tell the module loader to pr
     }
 
     MyComplexModule.dependencies = {
-      'my-dependency': 'another-module-class'
+      'my-dependency': 'another-module'
     }
 
-#### Module Class Options
+#### Class Options
 
-Module classes may also describe the options they accept. This will validate the configuration of module instance and guarantee the module class constructor has enough information to construct an instance.
+Classes may also describe the options they accept. This will validate any provided configuration and guarantee the module class constructor has enough information to construct an instance.
 
-Here is an example options description for a database connection module class.
+Here is an example `options` description for a database connection class.
 
     DatabaseConnection.options = {
-      'hostname': {type: 'string', required: true},
-      'port': {type: 'number', min: 10, max: 99999},
-      'username': {type: 'string'},
-      'password': {type: 'string'}
+      hostname: {type: 'string', required: true},
+      port: {type: 'number', min: 10, max: 99999},
+      username: {type: 'string'},
+      password: {type: 'string'}
     };
 
 **key** the option name given in `config.json`.
@@ -129,17 +191,17 @@ Here is an example options description for a database connection module class.
       max: 100, // max length or value
     }
 
-#### Module Events
+#### Class Events
 
-Module classes may also emit and listen to events. By default a Module will emit the following events:
+Classes that inherit from `Module` may emit and listen to events. By default a `Module` will emit the following events:
 
 **destroy**
 
-Emitted when a module instance is being destroyed during a `moduleLoader.reset()`. Modules should cleanup any connections and unbind all event listeners.
+Emitted when a module instance is being destroyed during a `moduleLoader.reset()`. Modules should cleanup any connections and unbind all event listeners when this is emitted.
 
 ### Configuration
 
-Each module instance is defined by creating a `config.json` file in a directory with the module's name.
+Instances are constructed by creating a `config.json` file in a directory with a name to identify the instance.
 
     /my-module-instance
       config.json
@@ -148,12 +210,12 @@ Each module instance is defined by creating a `config.json` file in a directory 
       
 This directory should contain files related to the module instance. For example it might contain a script that `require()`s the module instance. 
 
-#### config.module
+#### config.require
 
-The node module name that exports the module class that constructs the config's module instance.
+Require the node module that exports a class to construct the config's object/instance.
 
     {
-      "module": "my-module-class"
+      "require": "my-module-class"
     }
 
 #### config.options
@@ -210,18 +272,21 @@ Separate file that overrides `config.json` depending on the current `NODE_ENV`. 
 
 ## Requiring Modules
 
-To use module instances, you can `require()` them anywhere in your program like you normally would require a node module. For example, you can get a reference to the `fido` object like this:
-
-    var fido = require('fido'); // `fido` is the directory name containing the fido module config
+To reference the built objects, you can `require()` them anywhere in your program like you normally would require any node module. For example, you can get a reference to the `fido` object like this:
+    
+    // `fido` is the directory name containing the fido module `config.json` file
+    // or the name declared in the parent / global `config.json` file
+    var fido = require('fido');
+    
+**Note:** you can only require objects once `build()` has been called and calls back without an error.
 
 ### Require Behavior
 
-After your program runs `require('asteroid-module-loader')` the `require()` function's behavior will change slightly to make referencing module instances simpler. Since some module instances may not have any program specific code, they can't be `require()`d with `node`'s existing require() implementation.
+After your program runs `require('asteroid-module-loader')` the `require()` function's behavior will change slightly to make referencing instances the same as referencing regular node modules. Since instances are not bound to a physical file, they can't be `require()`d with `node`'s existing require() implementation.
     
 ## Config Loader
 
 `asteroid-module-loader` inherits from [asteroid-config-loader](https://github.com/strongloop/asteroid-config-loader).
-
 
 ## Bundled Modules / Aliasing
 

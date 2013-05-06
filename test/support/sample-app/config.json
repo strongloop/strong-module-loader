@@ -1,0 +1,33 @@
+{
+  "options": {
+    "prefix": "~"
+  },
+  "dependencies": {
+    "logger": "logger"
+  },
+  "fido": {
+    "require": "./dog",
+    "logger": {"require": "./logger"}
+  },
+  "santas-little-helper": {
+    "require": "./dog",
+    "options": {"name": "slh"},
+    "logger": {
+      "require": "./logger",
+      "options": {"prefix": "..."}
+    }
+  },
+  "rex": {
+    "require": "./dog",
+    "dependencies": {"logger": "rex-logger"}
+  },
+  "logger": {
+    "require": "./logger",
+    "options": {"prefix": "roof!"}
+  },
+  "rex-logger": {
+    "options": {
+      "prefix": "ROOF!"
+    }
+  }
+}
