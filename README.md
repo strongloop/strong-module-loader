@@ -1,9 +1,9 @@
-# object-builder
+# module-loader
 v0.0.1
 
 ## Purpose
 
-Instantiate `objects` backed by vanilla JavaScript classes by writing config files. Your class constructors may declare `options` and `dependencies` that will validate provided configuration and inject instances of your dependencies.
+Instantiate `objects` backed by vanilla JavaScript classes using config files. Your class constructors may declare `options` and `dependencies` that will validate provided configuration and inject instances of your dependencies.
 
  - This doesn't replace `require()`. Use this alongside `require()`.
  - This is not a plugin framework.
@@ -107,9 +107,9 @@ Write a couple vanilla JavaScript classes.
 
 Load up the config (app.js):
 
-    var objects = require('object-builder').create('my-app');
+    var builder = require('object-builder').create('my-app');
 
-    objects.build(function (err, modules) {
+    builder.build(function (err, objects) {
       if(err) throw err;
   
       objects
@@ -137,7 +137,7 @@ Your class should take meaningful input (options, dependencies) and create a use
 The `object-builder` does not have strong opinions on Classes. As far as it is concerned Classes are just vanilla JavaScript classes exported from a node module. Although if you want option validation and dependency injection your class must inherit from `ObjectBuilder.BaseObject`.
 
     var inherits = require('util').inherits;
-    var Module = require('asteroid-module-loader').Module;
+    var Module = require('asteroid-module-loader').BaseObject;
 
     module.exports = Dog;
 
@@ -145,7 +145,7 @@ The `object-builder` does not have strong opinions on Classes. As far as it is c
       this.options = options;
     }
 
-    inherits(Dog, Module);
+    inherits(Dog, BaseObject);
 
     Dog.prototype.speak = function() {
       console.log('roof', 'my name is', this.options.name);
@@ -288,24 +288,10 @@ After your program runs `require('asteroid-module-loader')` the `require()` func
 
 `asteroid-module-loader` inherits from [asteroid-config-loader](https://github.com/strongloop/asteroid-config-loader).
 
-## Bundled Modules / Aliasing
+## Searching Paths
 
-Some modules need to be distributed together. For example, you have a set of related modules that all live under a single version number since they depend on features from each other. In this case you should bundle your sub modules using the package.json `bundledDependencies` array.
+By default, the `asteroid-module-loader` searches the same paths that `require()` does. You can include additional paths in the search by adding directories to the `paths` array. This will not effect the paths exposed to `require()`.
 
-Reference bundled modules by relative location (just like require).
-
-    // config.json
-    {
-      "module": "myBundle/node_modules/foo"
-    }
-
-You may also provide aliases to any module path when creating a `ModuleLoader`.
-
-    var moduleLoader = require('asteroid-module-loader').create('my-app', {alias: {'foo': 'myBundle/node_modules/foo'}});
-
-Now the config can reference `foo` instead of the qualified path.
-
-    // config.json
-    {
-      "module": "foo"
-    }
+    var builder = require('object-builder').create('my-app');
+    
+    builder.paths.push('/Users/me/my_node_modules');
