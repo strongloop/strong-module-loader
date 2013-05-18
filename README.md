@@ -1,13 +1,13 @@
-# asteroid-module-loader
+# sl-module-loader
 v0.0.1
 
 ## Purpose
 
-The `asteroid-module-loader` allows your program to register classes (or types) that are instantiated via configuration files. Configuration files point to an implementation `module` constructor. The `module`'s job is to construct a useful instance with the given configuration options. This allows programs to be free from bootstrapping code and manageable via config.
+The `sl-module-loader` allows your program to register classes (or types) that are instantiated via configuration files. Configuration files point to an implementation `module` constructor. The `module`'s job is to construct a useful instance with the given configuration options. This allows programs to be free from bootstrapping code and manageable via config.
 
 ## Install
 
-    slnode install asteroid-module-loader
+    slnode install sl-module-loader
     
 ## Example
 
@@ -48,7 +48,7 @@ Where a `config.json` looks like this:
 
 We can load up all the dogs like so (app.js):
 
-    var moduleLoader = require('asteroid-module-loader').create('my-app');
+    var moduleLoader = require('sl-module-loader').create('my-app');
 
     moduleLoader.load(function (err, modules) {
       if(err) throw err;
@@ -75,7 +75,7 @@ The purpose of a module class is to take meaningful input (configuration, option
 A module class is a `node_module` that exports a constructor inheriting from the `Module` class.
 
     var inherits = require('util').inherits;
-    var Module = require('asteroid-module-loader').Module;
+    var Module = require('sl-module-loader').Module;
 
     module.exports = Dog;
 
@@ -216,11 +216,11 @@ To use module instances, you can `require()` them anywhere in your program like 
 
 ### Require Behavior
 
-After your program runs `require('asteroid-module-loader')` the `require()` function's behavior will change slightly to make referencing module instances simpler. Since some module instances may not have any program specific code, they can't be `require()`d with `node`'s existing require() implementation.
+After your program runs `require('sl-module-loader')` the `require()` function's behavior will change slightly to make referencing module instances simpler. Since some module instances may not have any program specific code, they can't be `require()`d with `node`'s existing require() implementation.
     
 ## Config Loader
 
-`asteroid-module-loader` inherits from [asteroid-config-loader](https://github.com/strongloop/asteroid-config-loader).
+`sl-module-loader` inherits from [sl-config-loader](https://github.com/strongloop/sl-config-loader).
 
 
 ## Bundled Modules / Aliasing
@@ -236,7 +236,7 @@ Reference bundled modules by relative location (just like require).
 
 You may also provide aliases to any module path when creating a `ModuleLoader`.
 
-    var moduleLoader = require('asteroid-module-loader').create('my-app', {alias: {'foo': 'myBundle/node_modules/foo'}});
+    var moduleLoader = require('sl-module-loader').create('my-app', {alias: {'foo': 'myBundle/node_modules/foo'}});
 
 Now the config can reference `foo` instead of the qualified path.
 

@@ -1,5 +1,5 @@
 /**
- * asteroid-module-loader ~ public api
+ * sl-module-loader ~ public api
  */
  
 module.exports = require('./lib/module-loader');

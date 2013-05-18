@@ -1,13 +1,13 @@
 {
-  "name": "asteroid-module-loader",
-  "description": "asteroid-module-loader",
+  "name": "sl-module-loader",
+  "description": "sl-module-loader",
   "version": "0.0.1",
   "scripts": { 
     "test": "mocha"
   },
   "dependencies": {
     "debug": "latest",
-    "asteroid-config-loader": "git+ssh://git@github.com:strongloop/asteroid-config-loader.git"
+    "sl-config-loader": "git+ssh://git@github.com:strongloop/sl-config-loader.git"
   },
   "devDependencies": {
     "mocha": "latest"
