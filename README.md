@@ -244,3 +244,6 @@ Now the config can reference `foo` instead of the qualified path.
     {
       "module": "foo"
     }
+
+
+#Test
