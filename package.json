@@ -1,15 +1,20 @@
 {
   "name": "sl-module-loader",
-  "description": "sl-module-loader",
+  "description": "separate your app into modules loaded by config files",
   "version": "0.0.1",
   "scripts": { 
     "test": "mocha"
   },
+  "license": "BSD",
   "dependencies": {
     "debug": "latest",
-    "sl-config-loader": "git+ssh://git@github.com:strongloop/sl-config-loader.git"
+    "sl-config-loader": "0.0.x"
   },
   "devDependencies": {
     "mocha": "latest"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "http://github.com/strongloop/sl-module-loader.git"
   }
 }
