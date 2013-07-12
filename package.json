@@ -1,14 +1,14 @@
 {
-  "name": "sl-module-loader",
+  "name": "strong-module-loader",
   "description": "separate your app into modules loaded by config files",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "scripts": { 
     "test": "mocha"
   },
   "license": "MIT",
   "dependencies": {
     "debug": "latest",
-    "sl-config-loader": "0.0.x"
+    "strong-config-loader": "~0.0.1"
   },
   "devDependencies": {
     "mocha": "latest"

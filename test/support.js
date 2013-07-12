@@ -1,5 +1,5 @@
 /**
- * sl-module-loader test setup and support.
+ * module-loader test setup and support.
  */
  
 assert = require('assert');
