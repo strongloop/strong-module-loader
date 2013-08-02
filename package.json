@@ -3,6 +3,10 @@
   "description": "separate your app into modules loaded by config files",
   "version": "0.0.4",
   "scripts": { 
+    "blanket": {
+      "pattern": "//^((?!(node_modules|test)).)*$/"
+    },
+    "coverage": "mocha -r blanket -R html-cov > coverage_strong-module-loader.html",
     "test": "mocha"
   },
   "license": "MIT",
@@ -11,6 +15,7 @@
     "strong-config-loader": "~0.0.1"
   },
   "devDependencies": {
+    "blanket": "latest",
     "mocha": "latest"
   },
   "repository" : {
