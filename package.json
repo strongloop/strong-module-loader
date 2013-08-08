@@ -20,6 +20,6 @@
   },
   "repository" : {
     "type" : "git",
-    "url" : "http://github.com/strongloop/sl-module-loader.git"
+    "url" : "http://github.com/strongloop/strong-module-loader.git"
   }
 }
