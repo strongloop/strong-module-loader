@@ -1,0 +1,8 @@
+{
+  "content": [
+    "README.md",
+    { "title": "Module Loader", "depth": 2 },
+    "lib/module-loader.js",
+    "lib/module.js"
+  ]
+}
