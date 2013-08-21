@@ -1,4 +1,4 @@
-# strong-module-loader
+# **DEPRECATED** - strong-module-loader
 
 ## Purpose
 
