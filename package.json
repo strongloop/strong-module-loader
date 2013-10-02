@@ -2,7 +2,7 @@
   "name": "strong-module-loader",
   "description": "separate your app into modules loaded by config files",
   "version": "0.0.4",
-  "scripts": { 
+  "scripts": {
     "blanket": {
       "pattern": "//^((?!(node_modules|test)).)*$/"
     },
@@ -11,15 +11,15 @@
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "latest",
+    "debug": "~0.7.2",
     "strong-config-loader": "~0.0.1"
   },
   "devDependencies": {
     "blanket": "latest",
     "mocha": "latest"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "http://github.com/strongloop/strong-module-loader.git"
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/strongloop/strong-module-loader.git"
   }
 }
